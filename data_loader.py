@@ -2,10 +2,6 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from feature_engineering import get_time_stock, pca, processor
-from xgb_model import XGB_Model
-from lgb_model import LGB_Model
-from mlp_model import MLP_Model
-
 
 def load_data(data_dir):
     train = pd.read_csv(data_dir + "train.csv")
@@ -35,22 +31,3 @@ def load_features(data_dir):
     test_features = pd.read_csv(data_dir + "test_features.csv")
     return train_features, test_features
 
-
-if __name__ == "__main__":
-    data_dir = "./data/optiver-realized-volatility-prediction/"
-    # data_dir = "./"
-    train_data, valid_data, test_data = load_data(data_dir)
-
-    # hyperparams_path = "lgb_config.yaml"
-    # model = LGB_Model(train_data, valid_data, test_data, hyperparams_path)
-    # model.train_and_eval()
-    # model.test()
-
-    # hyperparams_path = "mlp_config.yaml"
-    # model = MLP_Model(train_data, valid_data, test_data, hyperparams_path)
-    # model.train_and_eval()
-
-    hyperparams_path = "xgb_config.yaml"
-    model = XGB_Model(train_data, valid_data, test_data, hyperparams_path)
-    model.train_and_eval()
-    model.test()

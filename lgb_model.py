@@ -32,11 +32,13 @@ class LGB_Model(Base_Model):
         self.x_test = self.test_data[self.features]
         self.y_test = self.test_data["target"]
 
-    def test(self):
+    def test(self, model_path = None):
+        if model_path is not None:
+            self.load_model(model_path)
         test_predictions = self.model.predict(self.x_test)
         rmspe_score = rmspe(self.y_test, test_predictions)
         print(f"LGB RMSPE is {rmspe_score}")
-        lgb.plot_importance(self.model)
+        # lgb.plot_importance(self.model)
         return test_predictions
 
     def train_and_eval(self):
@@ -50,6 +52,7 @@ class LGB_Model(Base_Model):
             verbose_eval = 250,
             feval = feval_rmspe_lgb
         )
+        self.save_model("lgb_model.pth")
 
     def save_model(self, model_path):
         self.model.save_model(model_path)

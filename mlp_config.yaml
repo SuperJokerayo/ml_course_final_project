@@ -10,4 +10,5 @@ bn: False
 epochs: 50
 lr: 0.001
 batch_size: 128
+device: cpu
 

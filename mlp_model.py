@@ -107,6 +107,7 @@ class MLP_Model(Base_Model):
         self.epochs = self.hyperparams["epochs"]
         self.lr = self.hyperparams["lr"]
         self.batch_size = self.hyperparams["batch_size"]
+        self.device = self.hyperparams["device"]
 
     def _generate_feature_and_target(self):
         id_cols = ["stock_id", "time_id"]
@@ -136,18 +137,24 @@ class MLP_Model(Base_Model):
         self.x_valid_num = scale.transform(self.x_valid_num)
         self.x_test_num = scale.transform(self.x_test_num)
 
-    def test(self):
+    def test(self, model_path = None):
+        if model_path is not None:
+            self.load_model(model_path)
         test_dataset = MLP_Dataset(self.x_train_num[:], self.x_train_id[:], self.y_train[:])
         test_loader = DataLoader(test_dataset, batch_size = self.batch_size, shuffle = False)
         self.model.eval()
+        test_predictions = []
+
         with torch.no_grad():
             rmspe_score = 0.
             for x_num, x_id, y in test_loader:
                 y_pred = self.model(x_num, x_id)
                 loss = rmspe(y_pred, y, "torch")
+                test_predictions.append(y_pred.cpu().numpy())
                 rmspe_score += loss.item()
             rmspe_score /= len(test_loader)
         print(f"MLP test RMSPE is {rmspe_score}")
+        return np.concatenate(test_predictions)
 
     def train_and_eval(self):
         train_dataset = MLP_Dataset(self.x_train_num[:], self.x_train_id[:], self.y_train[:])
@@ -155,8 +162,11 @@ class MLP_Model(Base_Model):
         train_loader = DataLoader(train_dataset, batch_size = self.batch_size, shuffle = True)
         valid_loader = DataLoader(valid_dataset, batch_size = self.batch_size, shuffle = False)
 
+        torch.device(self.device)
         criterion = nn.MSELoss()
         optimizer = torch.optim.Adam(self.model.parameters(), lr = self.lr)
+
+        min_valid_loss = float("inf")
 
         for epoch in range(self.epochs):
             self.model.train()
@@ -178,3 +188,12 @@ class MLP_Model(Base_Model):
                     valid_loss += loss.item()
                 valid_loss /= len(valid_loader)
                 print(f"Epoch {epoch} valid rmpse score is {valid_loss}")
+                if valid_loss < min_valid_loss:
+                    min_valid_loss = valid_loss
+                    self.save_model("mlp_model.pth")
+
+    def save_model(self, model_path):
+        torch.save(self.model.state_dict(), model_path)
+
+    def load_model(self, model_path):
+        self.model.load_state_dict(torch.load(model_path))

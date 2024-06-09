@@ -18,11 +18,11 @@ class Base_Model(object):
     def train_and_eval(self):
         raise NotImplementedError
 
-    def test(self):
+    def test(self, model_path = None):
         raise NotImplementedError
 
-    def save_model(self):
+    def save_model(self, model_path):
         raise NotImplementedError
 
-    def load_model(self):
+    def load_model(self, model_path):
         raise NotImplementedError

@@ -98,7 +98,7 @@ def book_processor(df, stock_id = 0):
     df_feature["row_id"] = df_feature["book_time_id_"].apply(lambda x: f"{stock_id}-{x}")
     df_feature.drop(["book_time_id_"], axis = 1, inplace = True)
     df_feature.insert(0, "row_id", df_feature.pop("row_id"))
-    df_feature.to_csv("df_book_feature.csv", index = False)
+    # df_feature.to_csv("df_book_feature.csv", index = False)
     return df_feature
 
 def trade_processor(df, stock_id = 0):
@@ -168,7 +168,7 @@ def trade_processor(df, stock_id = 0):
     df_feature["row_id"] = df_feature["trade_time_id_"].apply(lambda x: f"{stock_id}-{x}")
     df_feature.drop(["trade_time_id_"], axis = 1, inplace = True)
     df_feature.insert(0, "row_id", df_feature.pop("row_id"))
-    df_feature.to_csv("df_trade_feature.csv", index = False)
+    # df_feature.to_csv("df_trade_feature.csv", index = False)
     return df_feature
 
 def get_time_stock(df):
@@ -243,7 +243,7 @@ if __name__ == "__main__":
     train_features = processor(data_dir, train_ids, is_train = True)
     train_features = train.merge(train_features, on = ["row_id"], how = "left")
     train_features = get_time_stock(train_features)
-    train_features.to_csv("train_features.csv", index = False)
+    # train_features.to_csv("train_features.csv", index = False)
 
     test = pd.read_csv(data_dir + "test.csv")
     test["row_id"] = test["stock_id"].astype(str) + '-' + test["time_id"].astype(str)
@@ -252,4 +252,4 @@ if __name__ == "__main__":
     test_features = processor(data_dir, test_ids, is_train = False)
     test_features = test.merge(test_features, on = ["row_id"], how = "left")
     test_features = get_time_stock(test_features)
-    test_features.to_csv("test_features.csv", index = False)
+    # test_features.to_csv("test_features.csv", index = False)

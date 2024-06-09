@@ -30,8 +30,11 @@ class XGB_Model(Base_Model):
         self.x_test = self.test_data[self.features]
         self.y_test = self.test_data["target"]
 
-    def test(self):
-        test_predictions = self.model.predict(self.x_test)
+    def test(self, model_path = None):
+        if model_path is not None:
+            self.load_model(model_path)
+        test_dataset = xgb.DMatrix(self.x_test)
+        test_predictions = self.model.predict(test_dataset)
         rmspe_score = rmspe(self.y_test, test_predictions)
         print(f"XGB RMSPE is {rmspe_score}")
         # lgbm.plot_importance(self.model)
@@ -49,6 +52,7 @@ class XGB_Model(Base_Model):
             verbose_eval = 250,
             custom_metric = feval_rmspe_xgb
         )
+        self.save_model("xgb_model.pth")
 
     def save_model(self, model_path):
         self.model.save_model(model_path)
