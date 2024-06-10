@@ -10,6 +10,7 @@ This project is a final project for the ML course conducted by Prof.Ying in PKU.
 - `checkpoints/`: The directory to store the checkpoints.
 - `core/`: The directory to store the feature engineering, models and losses.
 - `assets/`: The directory to store the assets.
+- `config/`: The configuration files.
 - `main.py`: The main file to run the code.
 
 # Usage
@@ -18,7 +19,9 @@ We recommend to run the code with python 3.10.
 2. Download the data from the [kaggle competition](https://www.kaggle.com/competitions/optiver-realized-volatility-prediction/data) and put the data into the `data/` directory. You can also download the data from PKU disk:
 
 <blockquote> 
-<a href="https://disk.pku.edu.cn/link/AA9318B275E17C49BBB7F1D52B9AFB8FE4">Download URL</a>
+<a href="https://disk.pku.edu.cn/link/AA9318B275E17C49BBB7F1D52B9AFB8FE4">
+Download URL
+</a>
 
 File Name：optiver-realized-volatility-prediction.zip
 
