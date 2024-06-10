@@ -163,6 +163,3 @@ cython_debug/
 
 data
 .idea
-lgb_model.pth
-xgb_model.pth
-mlp_model.pth
