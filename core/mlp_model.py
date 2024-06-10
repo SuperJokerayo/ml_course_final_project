@@ -5,8 +5,8 @@ from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import matplotlib.pyplot as plt
 
-from base_model import Base_Model
-from losses import rmspe
+from .base_model import Base_Model
+from .losses import rmspe
 
 from sklearn.preprocessing import StandardScaler
 
@@ -169,6 +169,9 @@ class MLP_Model(Base_Model):
         return np.concatenate(test_predictions)
 
     def plot_loss(self, train_losses, valid_losses):
+        plt.ylim(0.0005, 0.0030)
+        plt.xlim(0, self.epochs)
+        plt.grid()
         plt.plot(train_losses, label = "Train Loss")
         plt.plot(valid_losses, label = "Validation Loss")
         plt.xlabel("Epochs")
@@ -177,7 +180,7 @@ class MLP_Model(Base_Model):
         plt.legend()
         plt.show()
 
-    def train_and_eval(self):
+    def train_and_eval(self, model_path = None):
         train_dataset = MLP_Dataset(self.x_train_num[:], self.x_train_id[:], self.y_train[:])
         valid_dataset = MLP_Dataset(self.x_valid_num[:], self.x_valid_id[:], self.y_valid[:])
         train_loader = DataLoader(train_dataset, batch_size = self.batch_size, shuffle = True)
@@ -222,7 +225,8 @@ class MLP_Model(Base_Model):
                 print(f"Epoch {epoch} valid rmpse score is {valid_rmpse_score}")
                 if valid_loss < min_valid_loss:
                     min_valid_loss = valid_loss
-                    self.save_model("mlp_model.pth")
+                    if model_path is not None:
+                        self.save_model(model_path)
         self.plot_loss(train_losses, valid_losses)
 
     def save_model(self, model_path):

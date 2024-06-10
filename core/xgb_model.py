@@ -3,9 +3,9 @@ import xgboost as xgb
 import numpy as np
 import matplotlib.pyplot as plt
 
-from losses import rmspe, feval_rmspe_xgb
+from .losses import rmspe, feval_rmspe_xgb
 
-from base_model import Base_Model
+from .base_model import Base_Model
 
 class XGB_Model(Base_Model):
     def __init__(
@@ -57,7 +57,7 @@ class XGB_Model(Base_Model):
         plt.legend()
         plt.show()
 
-    def train_and_eval(self):
+    def train_and_eval(self, model_path = None):
         train_dataset = xgb.DMatrix(self.x_train, label = self.y_train)
         valid_dataset = xgb.DMatrix(self.x_valid, label = self.y_valid)
 
@@ -72,7 +72,8 @@ class XGB_Model(Base_Model):
             custom_metric = feval_rmspe_xgb,
             evals_result = valid_results
         )
-        self.save_model("xgb_model.pth")
+        if model_path is not None:
+            self.save_model(model_path)
         self.plot_loss(valid_results)
 
     def save_model(self, model_path):

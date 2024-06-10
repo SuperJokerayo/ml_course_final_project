@@ -15,8 +15,8 @@ def run(train_data, valid_data, test_data, model_type):
     hyperparams_path = f"./config/{model_type}_config.yaml"
     model = models[model_type](train_data, valid_data, test_data, hyperparams_path)
     os.makedirs("./checkpoints", exist_ok = True)
-    model.train_and_eval()
     model_path = f"./checkpoints/{model_type}_model.pth"
+    model.train_and_eval(model_path)
     model.test(model_path) if os.path.exists(model_path) else model.test()
 
 def main(data_dir, model_types = ["xgb", "lgb", "mlp"]):

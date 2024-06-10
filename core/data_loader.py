@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from feature_engineering import get_time_stock, pca, processor
+from .feature_engineering import get_time_stock, pca, processor
 
 def load_data(data_dir):
     train = pd.read_csv(data_dir + "train.csv")

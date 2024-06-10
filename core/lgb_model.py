@@ -5,9 +5,9 @@ import numpy as np
 import lightgbm as lgb
 import matplotlib.pyplot as plt
 
-from losses import rmspe, feval_rmspe_lgb
+from .losses import rmspe, feval_rmspe_lgb
 
-from base_model import Base_Model
+from .base_model import Base_Model
 
 
 class LGB_Model(Base_Model):
@@ -59,7 +59,7 @@ class LGB_Model(Base_Model):
         plt.legend(["Train Loss", "Validation Loss"])
         plt.show()
 
-    def train_and_eval(self):
+    def train_and_eval(self, model_path = None):
         train_dataset = lgb.Dataset(self.x_train, self.y_train)
         valid_dataset = lgb.Dataset(self.x_valid, self.y_valid)
         valid_results = {}
@@ -72,7 +72,8 @@ class LGB_Model(Base_Model):
             feval = feval_rmspe_lgb,
             evals_result = valid_results
         )
-        self.save_model("lgb_model.pth")
+        if model_path is not None:
+            self.save_model(model_path)
         self.plot_loss(valid_results)
 
 
