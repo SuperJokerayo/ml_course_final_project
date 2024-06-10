@@ -1,6 +1,8 @@
 import xgboost as xgb
 
 import numpy as np
+import matplotlib.pyplot as plt
+
 from losses import rmspe, feval_rmspe_xgb
 
 from base_model import Base_Model
@@ -40,9 +42,22 @@ class XGB_Model(Base_Model):
         # lgbm.plot_importance(self.model)
         return test_predictions
 
+    def plot_loss(self, evals_result):
+        train_loss = evals_result["train"]["rmse"]
+        valid_loss = evals_result["valid"]["rmse"]
+        plt.plot(train_loss, label = "Train Loss")
+        plt.plot(valid_loss, label = "Validation Loss")
+        plt.xlabel("Epochs")
+        plt.ylabel("rmse")
+        plt.title("Training and Validation Loss")
+        plt.legend()
+        plt.show()
+
     def train_and_eval(self):
         train_dataset = xgb.DMatrix(self.x_train, label = self.y_train)
         valid_dataset = xgb.DMatrix(self.x_valid, label = self.y_valid)
+
+        evals_result = {}
 
         self.model = xgb.train(
             params = self.hyperparams,
@@ -50,9 +65,11 @@ class XGB_Model(Base_Model):
             num_boost_round = 5000,
             evals = [(train_dataset, "train"), (valid_dataset, "valid")],
             verbose_eval = 250,
-            custom_metric = feval_rmspe_xgb
+            custom_metric = feval_rmspe_xgb,
+            evals_result = evals_result
         )
         self.save_model("xgb_model.pth")
+        self.plot_loss(evals_result)
 
     def save_model(self, model_path):
         self.model.save_model(model_path)

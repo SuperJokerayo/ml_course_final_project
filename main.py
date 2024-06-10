@@ -19,6 +19,7 @@ def run(train_data, valid_data, test_data, model_type):
         model.test(model_path)
     else:
         model.test()
+
 def main(data_dir, model_types = ["xgb", "lgb", "mlp"]):
     print("Running feature engineering ....")
     start = time.time()
@@ -35,4 +36,4 @@ def main(data_dir, model_types = ["xgb", "lgb", "mlp"]):
 
 if __name__ == "__main__":
     data_dir = "./data/optiver-realized-volatility-prediction/"
-    main(data_dir)
+    main(data_dir, model_types = ["xgb"])

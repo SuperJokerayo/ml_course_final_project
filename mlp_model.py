@@ -3,6 +3,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from base_model import Base_Model
 from losses import rmspe
@@ -156,6 +157,15 @@ class MLP_Model(Base_Model):
         print(f"MLP test RMSPE is {rmspe_score}")
         return np.concatenate(test_predictions)
 
+    def plot_loss(self, train_losses, valid_losses):
+        plt.plot(train_losses, label = "Train Loss")
+        plt.plot(valid_losses, label = "Validation Loss")
+        plt.xlabel("Epochs")
+        plt.ylabel("Loss")
+        plt.title("Training and Validation Loss")
+        plt.legend()
+        plt.show()
+
     def train_and_eval(self):
         train_dataset = MLP_Dataset(self.x_train_num[:], self.x_train_id[:], self.y_train[:])
         valid_dataset = MLP_Dataset(self.x_valid_num[:], self.x_valid_id[:], self.y_valid[:])
@@ -168,6 +178,8 @@ class MLP_Model(Base_Model):
 
         min_valid_loss = float("inf")
 
+        train_losses, valid_losses = [], []
+
         for epoch in range(self.epochs):
             self.model.train()
             train_loss = 0.
@@ -178,7 +190,10 @@ class MLP_Model(Base_Model):
                 train_loss += loss.item()
                 loss.backward()
                 optimizer.step()
-            print(f"Epoch {epoch} train loss is {train_loss / len(train_loader)}")
+            train_loss /= len(train_loader)
+            train_losses.append(train_loss)
+            print(f"Epoch {epoch} train loss is {train_loss}")
+
             self.model.eval()
             with torch.no_grad():
                 valid_loss = 0.
@@ -187,6 +202,7 @@ class MLP_Model(Base_Model):
                     loss = rmspe(y_pred, y, "torch")
                     valid_loss += loss.item()
                 valid_loss /= len(valid_loader)
+                valid_losses.append(valid_loss)
                 print(f"Epoch {epoch} valid rmpse score is {valid_loss}")
                 if valid_loss < min_valid_loss:
                     min_valid_loss = valid_loss

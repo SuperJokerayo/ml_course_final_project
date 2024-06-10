@@ -3,9 +3,12 @@ warnings.filterwarnings("ignore")
 
 import numpy as np
 import lightgbm as lgb
+import matplotlib.pyplot as plt
+
 from losses import rmspe, feval_rmspe_lgb
 
 from base_model import Base_Model
+
 
 class LGB_Model(Base_Model):
     def __init__(
@@ -38,21 +41,26 @@ class LGB_Model(Base_Model):
         test_predictions = self.model.predict(self.x_test)
         rmspe_score = rmspe(self.y_test, test_predictions)
         print(f"LGB RMSPE is {rmspe_score}")
-        # lgb.plot_importance(self.model)
+        lgb.plot_importance(self.model)
+        plt.show()
         return test_predictions
 
     def train_and_eval(self):
         train_dataset = lgb.Dataset(self.x_train, self.y_train)
         valid_dataset = lgb.Dataset(self.x_valid, self.y_valid)
+        valid_results = {}
         self.model = lgb.train(
             params = self.hyperparams,
             num_boost_round = 5000,
             train_set = train_dataset,
             valid_sets = [train_dataset, valid_dataset],
             verbose_eval = 250,
-            feval = feval_rmspe_lgb
+            feval = feval_rmspe_lgb,
+            evals_result = valid_results
         )
         self.save_model("lgb_model.pth")
+        lgb.plot_metric(valid_results, metric = "rmse")
+        plt.show()
 
     def save_model(self, model_path):
         self.model.save_model(model_path)
